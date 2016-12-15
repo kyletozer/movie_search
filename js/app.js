@@ -13,7 +13,13 @@ app.selectors = {
     return this.mainContent.find('.overlay');
   },
   overlayDesc: function(){
-    return this.mainContent.find('.description-overlay');
+    return this.mainContent.find('.overlay-description');
+  },
+  overlayTop: function(){
+    return this.mainContent.find('.overlay-top');
+  },
+  overlayClose: function(){
+    return this.mainContent.find('.close-overlay');
   }
 }
 
@@ -29,7 +35,8 @@ app.init = function(){
     var html = '';
 
     html += '<div class="overlay overlay-background" style="display:none"></div>';
-    html += '<div class="overlay description-overlay" style="display:none">';
+    html += '<div class="overlay overlay-description" style="display:none">';
+    html += '<div class="overlay-top"></div>';
     html += '<div class="row">';
 
     html += '<div class="col-xs-12"><span class="clickable close-overlay">< Search results</span></div>';
@@ -37,7 +44,8 @@ app.init = function(){
 
     html += '<div class="col-sm-8">';
 
-    html += '<h1>';
+    html += '<div class="overlay-heading-group">';
+    html += '<h1 class="overlay-heading">';
 
     html += '<span id="overlay-title">overlay heading</span>';
     html += '<span id="overlay-year"></span>';
@@ -45,13 +53,14 @@ app.init = function(){
     html += '</h1>';
 
     html += '<span id="overlay-imdb-rating">imdb rating</span>';
+    html += '</div>';
 
-    html += '<div>';
+    html += '<div class="overlay-body">';
 
-    html += '<h4>Plot Synopsis</h4>';
+    html += '<h4 class="overlay-heading">Plot Synopsis:</h4>';
     html += '<div id="overlay-plot"></div>';
 
-    html += '<a id="overlay-imdb-link" class="btn btn-success">View on IMDB</a>';
+    html += '<a id="overlay-imdb-link" class="btn btn-success" target="_blank">View on IMDB</a>';
 
     html += '</div>';
     html += '</div>';
@@ -97,7 +106,6 @@ app.init = function(){
 
       Search.forEach(function(movie){
         html += '<li class="clickable">';
-        // html += '<a href="http://www.imdb.com/title/' + movie.imdbID + '/" target="_blank">';
         html += '<div class="poster-wrap">';
 
         if(movie.Poster === 'N/A'){
@@ -110,7 +118,6 @@ app.init = function(){
         html += '</div>';
         html += '<span class="movie-title">' + movie.Title + '</span>';
         html += '<span class="movie-year">' + movie.Year + '</span>';
-        // html += '</a>';
         html += '</li>';
       });
       selectors.movies.append(html);
@@ -121,17 +128,20 @@ app.init = function(){
     var index = $(this).index();
     var movieObj = values.dataArr[index];
     var overlayParent = selectors.overlayDesc();
-    var url = values.url + '&t=' + movieObj.Title;
+    var url = values.url + '&plot=long&t=' + movieObj.Title;
 
     selectors.overlay().show();
+    selectors.overlayTop().css('height', (selectors.overlayClose().outerHeight() + $('.overlay-heading-group').outerHeight()) + 'px');
 
     // make api call
     $.get(url, function(data){
+      console.log(data);
       overlayParent.find('#overlay-title').text(data.Title);
       overlayParent.find('#overlay-year').text(' (' + data.Year + ')');
-      overlayParent.find('#overlay-imdb-rating').text(data.imdbRating);
-      overlayParent.find('#overlay-plot').text(data.Plot);
+      overlayParent.find('#overlay-imdb-rating').text('IMDB Rating: ' + data.imdbRating);
+      overlayParent.find('#overlay-plot').html('<p>' + data.Plot + '</p>');
       overlayParent.find('#overlay-poster').attr('src', data.Poster);
+      overlayParent.find('#overlay-imdb-link').attr('href', 'http://www.imdb.com/title/' + data.imdbID);
     });
   });
 
