@@ -91,18 +91,18 @@ app.init = function(){
       var Search = data.Search;
       var html = '';
 
-      values.dataArr = Search.slice();
-
       console.log(data);
 
       if(data.Error){
-        html += '<li class="no-movies">';
+        html += '<li class="no-movies desc">';
         html += '<i class="material-icons icon-help">help_outline</i>No movies found that match: ' + searchTerm + '.';
         html += '</li>';
 
         selectors.movies.append(html);
         return;
       }
+
+      values.dataArr = Search.slice();
 
       Search.forEach(function(movie){
         html += '<li class="clickable">';
@@ -124,7 +124,7 @@ app.init = function(){
     })
   });
 
-  selectors.movies.on('click', '> li', function(){
+  selectors.movies.on('click', '> li:not(.desc)', function(){
     var index = $(this).index();
     var movieObj = values.dataArr[index];
     var overlayParent = selectors.overlayDesc();
@@ -148,10 +148,6 @@ app.init = function(){
   selectors.mainContent.on('click', '.close-overlay', function(){
     selectors.overlay().hide();
   });
-
-  // testing
-  selectors.searchField.val('gun');
-  selectors.searchButton.trigger('click');
 };
 
 app.init();
