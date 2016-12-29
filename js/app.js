@@ -27,6 +27,7 @@ app.values = {
   url: 'http://www.omdbapi.com/?apikey=85d68d8c&r=json'
 };
 
+// markup for movie description page
 app.init = function(){
   var selectors = this.selectors;
   var values = this.values;
@@ -39,7 +40,7 @@ app.init = function(){
     html += '<div class="overlay-top"></div>';
     html += '<div class="row">';
 
-    html += '<div class="col-xs-12"><span class="clickable close-overlay">< Search results</span></div>';
+    html += '<div class="col-xs-12"><span class="clickable close-overlay">< Back to search results</span></div>';
     html += '<div class="col-sm-4"><img id="overlay-poster"></div>';
 
     html += '<div class="col-sm-8">';
@@ -70,6 +71,7 @@ app.init = function(){
     return html;
   });
 
+  // search function
   selectors.searchButton.click(function(event){
     event.preventDefault();
 
@@ -91,8 +93,9 @@ app.init = function(){
       var Search = data.Search;
       var html = '';
 
-      console.log(data);
+      // console.log(data);
 
+      // display markup for no movie results
       if(data.Error){
         html += '<li class="no-movies desc">';
         html += '<i class="material-icons icon-help">help_outline</i>No movies found that match: ' + searchTerm + '.';
@@ -102,8 +105,10 @@ app.init = function(){
         return;
       }
 
+      // store the retrieved results on the app object for later use
       values.dataArr = Search.slice();
 
+      // generate appropriate markup for retrieved results
       Search.forEach(function(movie){
         html += '<li class="clickable">';
         html += '<div class="poster-wrap">';
@@ -124,6 +129,7 @@ app.init = function(){
     })
   });
 
+  // click function for opening the movie description overlay for the selected movie
   selectors.movies.on('click', '> li:not(.desc)', function(){
     var index = $(this).index();
     var movieObj = values.dataArr[index];
